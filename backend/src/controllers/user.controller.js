@@ -20,7 +20,7 @@ export async function getRecommendedUsers(req, res) {
   }
 }
 
-export async function getMyFriends() {
+export async function getMyFriends(req, res) {
   try {
     const user = await User.findById(req.user.id)
       .select("friends")
@@ -33,7 +33,7 @@ export async function getMyFriends() {
   }
 }
 
-export async function sendFriendRequest() {
+export async function sendFriendRequest(req, res) {
   try {
     const myId = req.user.id;
     const { id: recipientId } = req.params;
@@ -72,7 +72,7 @@ export async function sendFriendRequest() {
   }
 }
 
-export async function acceptFriendRequest() {
+export async function acceptFriendRequest(req, res) {
   try {
     const { id: request } = req.params;
     const friendRequest = await FriendRequest.findById(requestId);
@@ -96,6 +96,39 @@ export async function acceptFriendRequest() {
     res.status(200).json({ message: "Friend Request Accepted!" });
   } catch (error) {
     console.log("Error in acceptFriendRequest controller:", error);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+}
+
+export async function getFriendRequests(req, res) {
+  try {
+    const incomingReqs = await FriendRequest.find({
+      recipient: req.user.id,
+      status: "pending",
+    }).populate("sender", "fullName profilePic nativeLanguage learningLanguage");
+
+    const acceptedReqs = await FriendRequest.find({
+      recipient: req.user.id,
+      status: "accepted",
+    }).populate("sender", "fullName profilePic");
+
+    res.status(200).json({ incomingReqs, acceptedReqs });
+  } catch (error) {
+    console.log("Error in getPendingFriendRequests controller", error.message);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+}
+
+export async function getOutgoingFriendReqs(req, res) {
+  try {
+    const outgoingRequests = await FriendRequest.find({
+      sender: req.user.id,
+      status: "pending",
+    }).populate("recipient", "fullName profilePic nativeLanguage learningLanguage");
+
+    res.status(200).json(outgoingRequests);
+  } catch (error) {
+    console.log("Error in outgoingRequests controller", error.message);
     res.status(500).json({ message: "Internal Server Error" });
   }
 }
