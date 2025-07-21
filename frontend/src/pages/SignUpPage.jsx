@@ -1,9 +1,7 @@
 import { useState } from "react";
 import { Earth } from "lucide-react";
 import { Link } from "react-router";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { signup } from "../lib/api.js";
-import useLogin from "../hooks/useLogin.js";
+import useSignup from "../hooks/useSignup.js";
 
 const SignUpPage = () => {
   const [signupData, setSignupData] = useState({
@@ -11,9 +9,8 @@ const SignUpPage = () => {
     email: "",
     password: "",
   });
-  const queryClient = useQueryClient();
 
-  const { signupMutation, isPending, error } = useLogin();
+  const { signupMutation, isPending, error } = useSignup();
 
   const handleSignup = (e) => {
     e.preventDefault();
