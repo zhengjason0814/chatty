@@ -33,13 +33,12 @@ const OnboardingPage = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log(formState ? formState : "nothing");
     onboardingMutation(formState);
   };
 
   const handleRandomAvatar = () => {
     const idx = Math.floor(Math.random() * 100) + 1;
-    const randomAvatar = `https://api.dicebear.com/9.x/adventurer-neutral/png?seed=${idx}`;
+    const randomAvatar = `https://avatar.iran.liara.run/public/${idx}.png`;
 
     setFormState({ ...formState, profilePic: randomAvatar });
     toast.success("Random profile picture generated!");

@@ -1,7 +1,7 @@
 import React from "react";
 
-const HomePage = () => {
-  return <div>HomePage</div>;
+const NotificationsPage = () => {
+  return <div>NotificationsPage</div>;
 };
 
-export default HomePage;
+export default NotificationsPage;
