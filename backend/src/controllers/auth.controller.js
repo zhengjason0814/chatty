@@ -25,7 +25,7 @@ export async function signup(req, res) {
         .json({ message: "Email already registered, login or create a new account." });
     }
     const idx = Math.floor(Math.random() * 100) + 1;
-    const randomAvatar = `https://api.dicebear.com/9.x/adventurer-neutral/png?seed=${idx}`;
+    const randomAvatar = `https://avatar.iran.liara.run/public/${idx}.png`;
 
     const newUser = await User.create({
       email,
