@@ -10,3 +10,5 @@ const useSignup = () => {
 
   return { error, isPending, signupMutation: mutate };
 };
+
+export default useSignup;
