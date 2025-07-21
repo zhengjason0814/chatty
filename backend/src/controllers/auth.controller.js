@@ -25,7 +25,7 @@ export async function signup(req, res) {
         .json({ message: "Email already registered, login or create a new account." });
     }
     const idx = Math.floor(Math.random() * 100) + 1;
-    const randomAvatar = `https://avatar.iran.liara.run/public/${idx}.png`;
+    const randomAvatar = `https://api.dicebear.com/9.x/adventurer-neutral/png?seed=${idx}`;
 
     const newUser = await User.create({
       email,
@@ -99,16 +99,16 @@ export function logout(req, res) {
 export async function onboard(req, res) {
   try {
     const userId = req.user._id;
-    const { fullName, bio, nativeLanguage, learnLanguage, location } = req.body;
+    const { fullName, bio, nativeLanguage, learningLanguage, location } = req.body;
 
-    if (!fullName || !bio || !nativeLanguage || !learnLanguage || !location) {
+    if (!fullName || !bio || !nativeLanguage || !learningLanguage || !location) {
       return res.status(400).json({
         message: "All fields are required",
         missingFields: [
           !fullName && "fullName",
           !bio && "bio",
           !nativeLanguage && "nativeLanguage",
-          !learnLanguage && "learnLanguage",
+          !learningLanguage && "learningLanguage",
           !location && "location",
         ].filter(Boolean),
       });
@@ -130,7 +130,7 @@ export async function onboard(req, res) {
         name: updatedUser.fullName,
         image: updatedUser.profilePic || "",
       });
-    } catch (error) {
+    } catch (streamError) {
       console.log("Error upserting Stream user during onboarding:", streamError.message);
     }
 
