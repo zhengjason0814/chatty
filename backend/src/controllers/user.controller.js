@@ -75,7 +75,7 @@ export async function sendFriendRequest(req, res) {
 export async function acceptFriendRequest(req, res) {
   try {
     const { id: request } = req.params;
-    const friendRequest = await FriendRequest.findById(requestId);
+    const friendRequest = await FriendRequest.findById(request);
 
     if (!friendRequest) return res.status(404).json("Friend Request not found");
     if (friendRequest.recipient.toString() !== req.user.id) {
@@ -93,7 +93,7 @@ export async function acceptFriendRequest(req, res) {
       $addToSet: { friends: friendRequest.sender },
     });
 
-    res.status(200).json({ message: "Friend Request Accepted!" });
+    res.status(200).json({ message: "Friend request accepted" });
   } catch (error) {
     console.log("Error in acceptFriendRequest controller:", error);
     res.status(500).json({ message: "Internal Server Error" });
@@ -108,9 +108,9 @@ export async function getFriendRequests(req, res) {
     }).populate("sender", "fullName profilePic nativeLanguage learningLanguage");
 
     const acceptedReqs = await FriendRequest.find({
-      recipient: req.user.id,
+      sender: req.user.id,
       status: "accepted",
-    }).populate("sender", "fullName profilePic");
+    }).populate("recipient", "fullName profilePic");
 
     res.status(200).json({ incomingReqs, acceptedReqs });
   } catch (error) {
