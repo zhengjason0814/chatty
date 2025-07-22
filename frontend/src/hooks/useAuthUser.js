@@ -8,8 +8,6 @@ const useAuthUser = () => {
     retry: false,
   });
 
-  console.log("useAuth is running", authUser);
-
   return { isLoading: authUser.isLoading, authUser: authUser.data?.user };
 };
 
