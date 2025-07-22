@@ -8,8 +8,8 @@ export async function getRecommendedUsers(req, res) {
 
     const recommendedUsers = await User.find({
       $and: [
-        { id_: { $ne: currentUserId } },
-        { $id: { $nin: currentUser.friends } },
+        { _id: { $ne: currentUserId } },
+        { _id: { $nin: currentUser.friends } },
         { isOnboarded: true },
       ],
     });
@@ -42,7 +42,7 @@ export async function sendFriendRequest(req, res) {
       return res.status(400).json({ message: "You can't send a friend request to yourself." });
     }
 
-    const recipient = User.findById(recipientId);
+    const recipient = await User.findById(recipientId);
     if (!recipient) {
       return res.status(404).json({ message: "Recipient not found." });
     } else if (recipient.friends.includes(myId)) {
