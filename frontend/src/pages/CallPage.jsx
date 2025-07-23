@@ -13,7 +13,6 @@ import {
   StreamTheme,
   CallingState,
   useCallStateHooks,
-  Call,
 } from "@stream-io/video-react-sdk";
 import "@stream-io/video-react-sdk/dist/css/styles.css";
 import toast from "react-hot-toast";
@@ -70,6 +69,7 @@ const CallPage = () => {
         if (isMounted) {
           setClient(videoClient);
           setCall(callInstance);
+          toast.success("Joined call successfully!");
         }
       } catch (error) {
         console.error("Error joining call:", error);

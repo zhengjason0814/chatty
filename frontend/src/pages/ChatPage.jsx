@@ -66,6 +66,7 @@ const ChatPage = () => {
         if (isMounted) {
           setChatClient(client);
           setChannel(currChannel);
+          toast.success("Connected to chat successfully!");
         }
       } catch (error) {
         console.error("Error in initializing chat:", error);

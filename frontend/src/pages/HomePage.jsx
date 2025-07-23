@@ -14,6 +14,7 @@ import NoRecommendedFound from "../components/NoRecommendedFound";
 import { capitalize } from "../lib/utils";
 import useAuthUser from "../hooks/useAuthUser";
 import { getFriendRequests } from "../lib/api";
+import toast from "react-hot-toast";
 
 const HomePage = () => {
   const queryClient = useQueryClient();
