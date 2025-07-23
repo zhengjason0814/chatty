@@ -16,6 +16,7 @@ import { capitalize } from "../lib/utils";
 const HomePage = () => {
   const queryClient = useQueryClient();
   const [outgoingRequestsIds, setOutgoingRequestsIds] = useState(new Set());
+  const { userUser } = useAuthUser();
 
   const { data: friends = [], isLoading: loadingFriends } = useQuery({
     queryKey: ["friends"],
@@ -27,6 +28,18 @@ const HomePage = () => {
     queryFn: getRecommendedUsers,
   });
 
+  const matchingUsers = [];
+  const otherUsers = [];
+
+  if (recommendedUsers && authUser) {
+    recommendedUsers.forEach((user) => {
+      if (user.nativeLanguage === authUser.learningLanguage) {
+        matchingUsers.push(user);
+      } else {
+        otherUsers.push(user);
+      }
+    });
+  }
   const { data: outgoingFriendReqs } = useQuery({
     queryKey: ["outgoingFriendReqs"],
     queryFn: getOutgoingFriendReqs,
