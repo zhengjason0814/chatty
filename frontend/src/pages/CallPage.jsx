@@ -1,4 +1,4 @@
-import React, { use, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import useAuthUser from "../hooks/useAuthUser";
 import { useNavigate, useParams } from "react-router";
 import { useQuery } from "@tanstack/react-query";
@@ -36,8 +36,16 @@ const CallPage = () => {
   });
 
   useEffect(() => {
+    let videoClient;
+    let callInstance;
+    let isMounted = true;
+
     const initCall = async () => {
-      if (!tokenData.token || !authUser || !callId) return;
+      if (!tokenData?.token || !authUser || !callId) {
+        if (isMounted) setIsConnecting(false);
+        return;
+      }
+
       try {
         console.log("Initializing Stream video client...");
 
@@ -47,29 +55,45 @@ const CallPage = () => {
           image: authUser.profilePic,
         };
 
-        const videoClient = new StreamVideoClient({
+        videoClient = new StreamVideoClient({
           apiKey: STREAM_API_KEY,
           user,
           token: tokenData.token,
         });
 
-        const callInstance = videoClient.call("default", callId);
+        callInstance = videoClient.call("default", callId);
 
         await callInstance.join({ create: true });
 
         console.log("Stream video client initialized");
 
-        setClient(videoClient);
-        setCall(callInstance);
+        if (isMounted) {
+          setClient(videoClient);
+          setCall(callInstance);
+        }
       } catch (error) {
         console.error("Error joining call:", error);
-        toast.error("Could not join call. Try again.");
+        if (isMounted) {
+          toast.error("Could not join call. Try again.");
+        }
       } finally {
-        setIsConnecting(false);
+        if (isMounted) setIsConnecting(false);
       }
     };
 
     initCall();
+
+    return () => {
+      isMounted = false;
+      (async () => {
+        try {
+          if (callInstance) await callInstance.leave();
+          if (videoClient) await videoClient.disconnectUser();
+        } catch (err) {
+          console.warn("Cleanup error:", err);
+        }
+      })();
+    };
   }, [tokenData, authUser, callId]);
 
   if (isLoading || isConnecting) return <PageLoader />;
@@ -96,11 +120,14 @@ const CallPage = () => {
 const CallContent = () => {
   const { useCallCallingState } = useCallStateHooks();
   const callingState = useCallCallingState();
-  const { id } = useParams();
-
   const navigate = useNavigate();
 
-  if (callingState === CallingState.LEFT) return navigate("/");
+  useEffect(() => {
+    if (callingState === CallingState.LEFT) {
+      navigate("/");
+    }
+  }, [callingState, navigate]);
+
   return (
     <StreamTheme>
       <SpeakerLayout />

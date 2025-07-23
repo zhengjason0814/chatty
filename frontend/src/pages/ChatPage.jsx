@@ -35,40 +35,60 @@ const ChatPage = () => {
   });
 
   useEffect(() => {
+    let client;
+    let isMounted = true;
+
     const initChat = async () => {
       if (!tokenData?.token || !authUser) return;
+
       try {
         console.log("Initializing stream chat client...");
-        const client = StreamChat.getInstance(STREAM_API_KEY);
+        client = StreamChat.getInstance(STREAM_API_KEY);
 
-        await client.connectUser(
-          {
-            id: authUser._id,
-            name: authUser.fullName,
-            image: authUser.profilePic,
-          },
-          tokenData.token
-        );
+        if (!client.userID || client.userID !== authUser._id) {
+          await client.connectUser(
+            {
+              id: authUser._id,
+              name: authUser.fullName,
+              image: authUser.profilePic,
+            },
+            tokenData.token
+          );
+        }
 
         const channelId = [authUser._id, targetUserId].sort().join("-");
-
         const currChannel = client.channel("messaging", channelId, {
           members: [authUser._id, targetUserId],
         });
 
         await currChannel.watch();
 
-        setChatClient(client);
-        setChannel(currChannel);
+        if (isMounted) {
+          setChatClient(client);
+          setChannel(currChannel);
+        }
       } catch (error) {
         console.error("Error in initializing chat:", error);
         toast.error("Could not connect to chat. Please try again.");
       } finally {
-        setLoading(false);
+        if (isMounted) setLoading(false);
       }
     };
+
     initChat();
+
+    return () => {
+      isMounted = false;
+    };
   }, [tokenData, authUser, targetUserId]);
+
+  useEffect(() => {
+    return () => {
+      if (chatClient) {
+        chatClient.disconnectUser().catch(console.warn);
+      }
+    };
+  }, []);
 
   const handleVideoCall = () => {
     if (channel) {
