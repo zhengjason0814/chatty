@@ -48,6 +48,7 @@ const HomePage = () => {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["outgoingFriendReqs"] });
       queryClient.invalidateQueries({ queryKey: ["friendRequests"] });
+      toast.success("Friend request sent!");
     },
   });
 

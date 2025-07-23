@@ -87,8 +87,12 @@ const CallPage = () => {
       isMounted = false;
       (async () => {
         try {
-          if (callInstance) await callInstance.leave();
-          if (videoClient) await videoClient.disconnectUser();
+          if (callInstance && callInstance.isJoined) {
+            await callInstance.leave();
+          }
+          if (videoClient) {
+            await videoClient.disconnectUser();
+          }
         } catch (err) {
           console.warn("Cleanup error:", err);
         }
@@ -109,7 +113,7 @@ const CallPage = () => {
           </StreamVideo>
         ) : (
           <div className="flex items-center justify-center h-full">
-            <p>Could not initialize call. Please refresh or try again later.</p>
+            <p>Could not initialize call. Trying again... {"Refresh if takes awhile."}</p>
           </div>
         )}
       </div>

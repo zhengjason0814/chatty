@@ -79,16 +79,11 @@ const ChatPage = () => {
 
     return () => {
       isMounted = false;
-    };
-  }, [tokenData, authUser, targetUserId]);
-
-  useEffect(() => {
-    return () => {
-      if (chatClient) {
-        chatClient.disconnectUser().catch(console.warn);
+      if (client) {
+        client.disconnectUser().catch(console.warn);
       }
     };
-  }, []);
+  }, [tokenData, authUser, targetUserId]);
 
   const handleVideoCall = () => {
     if (channel) {
