@@ -102,7 +102,6 @@ const App = () => {
               <Navigate to="/login" />
             )
           }
-          Route
         />
       </Routes>
       <Toaster />
